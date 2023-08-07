@@ -1,0 +1,22 @@
+{
+  "name": "openai",
+  "version": "1.0.0",
+  "description": "A NodeJS console app that use OpenAI, Stable Diffusion, Future Diffusion and other AI models to generate text, images, and videos from Text Prompts.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["OpenAI","Stable Diffusion","ChatGPT"],
+  "author": "Darel Johnson",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "dotenv": "^16.0.3",
+    "midjourney-client": "^1.0.8",
+    "openai": "^3.2.1",
+    "ora": "^6.3.0",
+    "replicate": "^0.9.0"
+  }
+}
