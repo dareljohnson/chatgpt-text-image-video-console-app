@@ -32,6 +32,13 @@ You can clone this project and skip the step-by-step instructions to develop fro
  git clone https://github.com/dareljohnson/chatgpt-text-image-video-console-app.git
 ```
 
+Change directory:
+
+```
+
+cd chatgpt-text-image-video-console-app
+```
+
 Initialze a local git repository:
 
 ```
