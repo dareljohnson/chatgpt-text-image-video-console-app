@@ -76,18 +76,45 @@ const sanitizeFilename = (text, maxLength = 50) => {
 };
 
 // Download a File
-const downloadFile = (url, dest) => new Promise((resolve, reject) => {
+const MAX_REDIRECTS = 5;  // Maximum number of redirects to follow
+
+const downloadFile = (url, dest, redirectCount = 0) => new Promise((resolve, reject) => {
+    if (redirectCount > MAX_REDIRECTS) {
+        reject(new Error(`Too many redirects when trying to download '${url}'`));
+        return;
+    }
+
     const file = fs.createWriteStream(dest);
+
     https.get(url, (response) => {
+        if (response.statusCode === 307 || response.statusCode === 302) {  // Handle redirects
+            file.close();
+            fs.unlink(dest, () => {});  // Delete the file since we won't be writing to it
+            return downloadFile(response.headers.location, dest, redirectCount + 1)
+                .then(resolve)
+                .catch(reject);
+        }
+
+        // Check if the request was successful
+        if (response.statusCode !== 200) {
+            reject(new Error(`Failed to get '${url}' (${response.statusCode})`));
+            return;
+        }
+
         response.pipe(file);
+
         file.on('finish', () => {
-            file.close(resolve);
+            file.close(resolve);  // Close the write stream
         });
-        
     }).on('error', (err) => {
-        fs.unlink(dest, () => {
+        fs.unlink(dest, () => { // Delete the file if there was an error
             reject(err);
         });
+    });
+
+    file.on('error', (err) => { // Handle errors
+        fs.unlink(dest, () => {}); // Delete the file
+        reject(err);
     });
 });
 
@@ -348,10 +375,10 @@ const generateVideo = async (prompt, generator) => {
 
             if (output === null) {
                 console.log('Waiting for output...');
-                await sleep(1000); // Sleep for 1 second
+                await sleep(2000); // Sleep for 2 second
             }
         }
-        //console.log(output);
+        console.log(output);
 
         videoUrl = output;
         const excerpt = sanitizeFilename(prompt);
